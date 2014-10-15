@@ -1,0 +1,13 @@
+3
+[9.3,1.2,87.9]
+[1.0,1.0]
+[0.0,0.0,1.0]
+v1 + v2
+v3 ­ v1
+incr v3 v1
+decr v1 v3
+v2 dot v3
+norm v3
+distance v1 v3
+normalize v3
+print v3
