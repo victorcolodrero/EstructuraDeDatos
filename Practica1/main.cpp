@@ -36,7 +36,15 @@ void decr(indice* source, indice* other);
 float distance(indice v1, indice v2);
 
 
+void netejar_vector(indice* vector, int mida);
+
 //******************UTILITIES FUNCTIONS***************************
+
+void netejar_vector(indice* vector, int mida) {
+    for (int i = 0; i < mida; i++)
+        vector->data[i] = 0;
+}
+
 vector<string> leerOperaciones(string cadena){
 
     vector<string> operations;
@@ -53,12 +61,12 @@ vector<string> leerOperaciones(string cadena){
     return operations;
 }
 
-void seleccionarOperacion(vector<string> operacion, indice index[]){
+void seleccionarOperacion(vector<string> operacion, indice index[], int *n){
 
-    string funciones[9] = {"+ ","- ","print ","dot ","norm ","normalize ","incr ","decr ","distance "};
+    string funciones[9] = {"+","-","print","dot","norm","normalize","incr","decr","distance"};
 
     int function = 0, aux = 0, op1 = -1, op2 = -1, index1 = 0, index2 = 0, i, k;
-
+    int len = 0;
     for (i = 0; i < operacion.size(); i++)
         for (int j = 0; j < operacion[j].length(); j++) {
             if(operacion[i].at(j) == 'v' && aux == 0){
@@ -71,49 +79,29 @@ void seleccionarOperacion(vector<string> operacion, indice index[]){
                 aux = 0;
                 op2 = i;
             }
-            function = (op1 == 1) ? 1 : 0;
         }
-
-    //cout << index1 << endl;
-    //cout << index2 << endl;
-    //cout << operacion[function] << endl;
-
-    for (k = 0; k < 9; k++){
-      cout << "for" << endl;
-        if (operacion[function] == funciones[k]){
-          cout << "if" << endl;
-            switch(k){
-                case 0:
-                    cout << "entrando al add";
-                    index[index1] = add(index[index1], index[index2]);
+        function = (op1 == 0) ? 1 : 0;
+        cout << operacion[function] << endl << *n <<endl;
+        for(int i = 0; i < 3; i++)
+        {
+          if(operacion[function] == funciones[i])
+            switch(i){
+              case 0:
+                    index = (indice*)realloc(index,sizeof(indice));
+                    index[(*n)] = add(index[index1], index[index2]);
+                    (*n)++;
                     break;
                 case 1:
-                    index[index1] = sub(index[index1], index[index2]);
+                    index = (indice*)realloc(index,sizeof(indice));
+                    index[(*n)] = sub(index[index1], index[index2]);
+                    (*n)++;
                     break;
-                case 2:
-                    print(index[index1]);
-                    break;
-                case 3:
-                    cout << "Resultado operacion dot: " << dot(index[index1],index[index2]) << endl;
-                    break;
-                case 4:
-                    cout << "Resultado operacion dot: " << norm(index[index1]) << endl;
-                    break;
-                case 5:
-                    //normalize(index[index1]);
-                    break;
-                case 6:
-                    incr(&index[index1], &index[index2]);
-                    break;
-                case 7:
-                    incr(&index[index1], &index[index2]);
-                    break;
-                case 8:
-                    //cout << "Resultado operacion dot: " << distance(index[index1], index[index2]) << endl;
-                    break;
+                    
             }
         }
-    }
+        //if(operacion[function] == funciones[0])
+          //  cout << "suma" << endl;
+
 }
 
 
@@ -165,7 +153,7 @@ void print(indice v){
 
 //********************INTERMIDIATE FUNCTIONS*****************************
 float dot(indice v1, indice v2){
-        double product = 0;
+        float product = 0;
         for (int i = 0; i < v1.size; i++)
             for (int j = 0; j < v2.size; i++)
                 product = product + (v1.data[i]) * (v2.data[i]);
@@ -191,65 +179,36 @@ void normalize(indice* v){
 //********************HARD FUNCTIONS*****************************
 indice add(indice v1, indice v2){
 
-
-    int i, mida, gran;
-    bool quin;
     indice index;
-    if(v1.size < v2.size){
-        mida = v1.size;
-        gran = v2.size;
-        quin = 0;
-    }
+    int mida = (v1.size > v2.size) ? v1.size : v2.size;
 
-    else {
-        mida = v2.size;
-        gran = v1.size;
-        quin = 1;
-    }
+    index.data = (float*) malloc(sizeof (float)*mida);
 
-    for(i = 0; i<mida; i++)
-        index.data[i] = v1.data[i] + v2.data[i];
+    netejar_vector(&index, mida);
+    //Netejem el vector per si accedeix a una zona de memoria on hi ha bruticia
 
-    for(; i<gran; i++){
-        if(!quin)
-            index.data[i] = v2.data[i];
-        else
-            index.data[i] = v1.data[i];
-    }
+    incr(&index, &v1);
+    cout << "bucle 1" << endl;
+    incr(&index, &v2);
 
-    index.size = i;
-    cout << "Saliendo del add";
+    index.size = mida;
+
     return index;
 }
 
 indice sub(indice v1, indice v2){
 
-    int i, mida, gran;
-    bool quin;
-    indice index;
-    if(v1.size < v2.size){
-        mida = v1.size;
-        gran = v2.size;
-        quin = 0;
-    }
+   indice index;
+    int mida = (v1.size > v2.size) ? v1.size : v2.size;
 
-    else {
-        mida = v2.size;
-        gran = v1.size;
-        quin = 1;
-    }
+    index.data = (float*) malloc(sizeof (float)*mida);
 
-    for(i = 0; i<mida; i++)
-        index.data[i] = v1.data[i] - v2.data[i];
+    netejar_vector(&index, mida);
 
-    for(; i<gran; i++){
-        if(!quin)
-            index.data[i] = v2.data[i];
-        else
-            index.data[i] = v1.data[i];
-    }
+    decr(&index, &v1);
+    decr(&index, &v2);
 
-    index.size = i;
+    index.size = mida;
 
     return index;
 }
@@ -260,15 +219,9 @@ void incr(indice* source, indice* other){
      Si escribim el petit ja quedarà bé i el gran també
      */
 
-    int mida;
-
-    if(source->size < other->size)
-        mida = source->size;
-
-    else
-        mida = other->size;
-
-    for(int i = 0; i<mida; i++)
+    int mida = (source->size < other->size) ? source->size : other->size;
+    
+    for (int i = 0; i < mida; i++)
         source->data[i] = source->data[i] + other->data[i];
 }
 
@@ -286,7 +239,7 @@ void decr(indice* source, indice* other){
         mida = other->size;
 
     for(int i = 0; i<mida; i++)
-        source->data[i] = source->data[i] + other->data[i];
+        source->data[i] = source->data[i] - other->data[i];
 }
 
 float distance(indice* v1, indice* v2){
@@ -314,7 +267,7 @@ int main(int argc, const char * argv[]) {
         //cout << operaciones[0] << endl;
         //cout << operaciones[1] << endl;
         //cout << operaciones[2] << endl;
-        seleccionarOperacion(operaciones, index);
+        seleccionarOperacion(operaciones, index,&n);
         operaciones.clear();
 
     }
